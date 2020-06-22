@@ -108,7 +108,7 @@ def generate_fake_samples(g_model, latent_dim, n_samples):
 	return X, y
 
 # create and save a plot of generated images (reversed grayscale)
-def save_plot(examples, epoch, n=10):
+def save_plot(examples, epoch, n=5):
 	# plot images
 	for i in range(n * n):
 		# define subplot
@@ -171,7 +171,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			# summarize loss on this batch
 			print('>%d, %d/%d, d=%.3f, g=%.3f' % (i+1, j+1, bat_per_epo, d_loss, g_loss))
 		# evaluate the model performance, sometimes
-		if (i+1) % 1 == 0:
+		if (i+1) % 10 == 0:
 			summarize_performance(i, g_model, d_model, dataset, latent_dim)
 
 '''
