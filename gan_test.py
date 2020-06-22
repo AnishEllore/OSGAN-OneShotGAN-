@@ -108,7 +108,7 @@ def generate_fake_samples(g_model, latent_dim, n_samples):
 	return X, y
 
 # create and save a plot of generated images (reversed grayscale)
-def save_plot(examples, epoch, n=5):
+def save_plot(examples, epoch, n=5,client=1):
 	# plot images
 	for i in range(n * n):
 		# define subplot
@@ -118,15 +118,15 @@ def save_plot(examples, epoch, n=5):
 		# plot raw pixel data
 		pyplot.imshow(examples[i, :, :, 0], cmap='gray_r')
 	# save plot to file
-	
-	if not os.path.isdir('results_plots'):
-		os.makedirs('results_plots')
-	filename = 'results_plots/generated_plot_e%03d.png' % (epoch+1)
+	dirname = 'results_plots'+'_client_'+str(client)
+	if not os.path.isdir(dirname):
+		os.makedirs(dirname)
+	filename = dirname+'/generated_plot_e%03d.png' % (epoch+1)
 	pyplot.savefig(filename)
 	pyplot.close()
 
 # evaluate the discriminator, plot generated images, save generator model
-def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100):
+def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1):
 	# prepare real samples
 	X_real, y_real = generate_real_samples(dataset, n_samples)
 	# evaluate discriminator on real examples
@@ -138,16 +138,16 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 	# summarize discriminator performance
 	print('>Accuracy real: %.0f%%, fake: %.0f%%' % (acc_real*100, acc_fake*100))
 	# save plot
-	save_plot(x_fake, epoch)
+	save_plot(x_fake, epoch,client=client)
 	# save the generator model tile file
-	
-	if not os.path.isdir('generator_models'):
-		os.makedirs('generator_models')
-	filename = 'generator_models/generator_model_%03d.h5' % (epoch + 1)
+	dirname='generator_models'+'_client_'+str(client)
+	if not os.path.isdir(dirname):
+		os.makedirs(dirname)
+	filename = dirname+'/generator_model_%03d.h5' % (epoch + 1)
 	g_model.save(filename)
 
 # train the generator and discriminator
-def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batch=256):
+def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client = 1, n_batch=256):
 	bat_per_epo = int(dataset.shape[0] / n_batch)
 	half_batch = int(n_batch / 2)
 	# manually enumerate epochs
@@ -172,7 +172,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			print('>%d, %d/%d, d=%.3f, g=%.3f' % (i+1, j+1, bat_per_epo, d_loss, g_loss))
 		# evaluate the model performance, sometimes
 		if (i+1) % 10 == 0:
-			summarize_performance(i, g_model, d_model, dataset, latent_dim)
+			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client)
 
 '''
 # size of the latent space
