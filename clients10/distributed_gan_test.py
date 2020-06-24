@@ -30,10 +30,9 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 		# print('***********done**************')
 	return model_main, history
 	
-
 # size of the latent space
 latent_dim = 100
-clients = 5
+clients = 10
 (trainX, trainY), (testX, testY) = load_data()
 x = trainX
 y= trainY
@@ -46,10 +45,7 @@ combined_datset_y = []
 for i in range(0,clients):
 	print('client ',i)
 	x_temp = x[int((i*len(x)/clients)):int((i+1)*len(x)/clients)]
-
 	y_temp = y[int(i*len(x)/clients):int((i+1)*len(x)/clients)]
-
-
 	n_samples = len(y_temp)
 	# create the discriminator
 	d_model = define_discriminator()
@@ -59,30 +55,29 @@ for i in range(0,clients):
 	gan_model = define_gan(g_model, d_model)
 	# load datset
 	dataset = load_real_samples(x_temp)
-	
+	# train image classifier
+	image_model, _ = train_classifier(dataset,y_temp,n_epochs=100)
 	# train gan model
-	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=100,client=i+1)
-
-	# train image model
-	image_model, _ = train_classifier(dataset,y_temp,n_epochs=50)
-
-
+	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=200,client=i+1)
 	# generate fake samples at the server
 	x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
 	# classify fake samples
-	y_fake = np.array(image_model.predict_classes(x_fake))
+	y_fake = image_model.predict_classes(x_fake)
+	y_fake = y_fake.reshape(-1,1)
+	print(y_fake.shape)
 	# store the combined datset
-	
 	if i==0:
 		combined_datset_x = x_fake
 		combined_datset_y = y_fake
 	else:	
 		combined_datset_x = np.vstack((combined_datset_x,x_fake))
 		combined_datset_y = np.vstack((combined_datset_y,y_fake))
-print('Complete')
-combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=50)
 
-central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=50)
+print('Complete')
+
+combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=100)
+
+central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=100)
 results = {}
 
 
