@@ -61,9 +61,9 @@ for i in range(0,clients):
 	# train image classifier
 	image_model, _ = train_classifier(dataset[0],y_temp,n_epochs=100)
 	# train gan model
-	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=200,client=i+1)
+	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=300,client=i+1)
 	# generate fake samples at the server
-	[x_fake, labels], _ = generate_fake_samples(g_model, latent_dim, n_samples)
+	[x_fake, labels], _ = generate_fake_samples(g_model, latent_dim, 2*n_samples)
 	# classify fake samples
 	y_fake = image_model.predict_classes(x_fake)
 	y_fake = y_fake.reshape(-1,1)
