@@ -1,4 +1,4 @@
-[0.22579166293144226]
+[0.6677083373069763]
 printing other results
-{'FGAN testing accuracy(original_data)': 21.8666672706604, 'Central model testing accuracy': 81.33333325386047}
-[0.8039166927337646]
+{'FGAN testing accuracy(original_data)': 66.28333330154419, 'Central model testing accuracy': 81.16666674613953}
+[0.7928749918937683]
