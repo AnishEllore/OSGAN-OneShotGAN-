@@ -20,10 +20,10 @@ import os
 
 # define the standalone discriminator model
 def define_discriminator(in_shape=23):
-    n_nodes = 32
+	n_nodes = 32
 	model = Sequential()
 	# normal
-    model.add(Dense(n_nodes*4, input_shape = (self.INPUT_SHAPE,), activation='relu'))
+	model.add(Dense(n_nodes*4, input_shape = (in_shape,), activation='relu'))
 	model.add(Dense(n_nodes*2,activation='relu'))
 	model.add(Dense(1, activation='sigmoid'))
 	# compile model
@@ -39,9 +39,9 @@ def define_generator(latent_dim):
 	model.add(Dense(n_nodes, input_dim=latent_dim))
 	model.add(LeakyReLU(alpha=0.2))
 	model.add(Dense(n_nodes*2,activation='relu'))
-    model.add(LeakyReLU(alpha=0.2))
-    model.add(Dense(n_nodes*4,activation='relu'))
-
+	model.add(LeakyReLU(alpha=0.2))
+	model.add(Dense(n_nodes*4,activation='relu'))
+	model.add( Dense(23,activation='relu'))
 	return model
 # define the combined generator and discriminator model, for updating the generator
 def define_gan(g_model, d_model):

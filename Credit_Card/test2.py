@@ -1,4 +1,4 @@
-from gan_utils import *
+from gan_u import *
 import numpy as np
 import os
 import sys
@@ -74,11 +74,12 @@ gan_model = define_gan(g_model, d_model)
 
 i=0
 n_samples = len(trainX)
-image_model, _ = train_classifier(trainX,trainY,n_epochs=1)
 	# train gan model
-train(g_model, d_model, gan_model, trainX, latent_dim,n_epochs=1,client=i+1)
+train(g_model, d_model, gan_model, trainX, latent_dim,n_epochs=100,client=i+1)
+
+image_model, _ = train_classifier(trainX,trainY,n_epochs=100)
 	# generate fake samples at the server
-[x_fake, labels], _ = generate_fake_samples(g_model, latent_dim, n_samples)
+x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
 	# classify fake samples
 y_fake = image_model.predict_classes(x_fake)
 y_fake = y_fake.reshape(-1,1)
@@ -89,18 +90,18 @@ y_fake = y_fake.reshape(-1,1)
 
 print('Complete')
 
-central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=1)
-combined_model, combined_model_history = train_classifier(x_fake,y_fake,x_val=trainX,y_val=trainY,n_epochs=1)
+central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=100)
+combined_model, combined_model_history = train_classifier(x_fake,y_fake,x_val=trainX,y_val=trainY,n_epochs=100)
 
 results = {}
 results['FGAN testing accuracy(original_data)'] = combined_model.evaluate(testX,testY,verbose=0)[1]*100
 results['Central model testing accuracy'] = central_model.evaluate(testX, testY, verbose=0)[1]*100
 
 
-if not os.path.isdir('results'):
-	os.makedirs('results')
+if not os.path.isdir('ganresults'):
+	os.makedirs('ganresults')
 
-results_save_path = 'results/gan_distributed_results.txt'
+results_save_path = 'ganresults/gan_distributed_results.txt'
 
 with open(results_save_path, 'w') as f:
 
@@ -119,7 +120,7 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(loc='lower right')
 
-name = 'results/all_approaches_accuracy_vs_epochs'
+name = 'ganresults/all_approaches_accuracy_vs_epochs'
 plt.savefig(name+'.eps')
 plt.savefig(name+'.png')
 plt.clf()
