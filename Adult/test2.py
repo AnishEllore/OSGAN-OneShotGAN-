@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from sklearn.utils import shuffle
 from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
@@ -38,8 +38,8 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 df = pd.read_csv("./adult.data",header=None)
 df = shuffle(df).reset_index(drop=True)
 
-scaler = StandardScaler()
-	# scaler = MinMaxScaler()
+#scaler = StandardScaler()
+scaler = MinMaxScaler()
 
 LABEL = df.columns[-1]
 df.dropna()

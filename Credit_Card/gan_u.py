@@ -37,9 +37,7 @@ def define_generator(latent_dim):
 	# foundation for 4x4 image
 	n_nodes = 32
 	model.add(Dense(n_nodes, input_dim=latent_dim))
-	model.add(LeakyReLU(alpha=0.2))
 	model.add(Dense(n_nodes*2,activation='relu'))
-	model.add(LeakyReLU(alpha=0.2))
 	model.add(Dense(n_nodes*4,activation='relu'))
 	model.add( Dense(23,activation='relu'))
 	return model
