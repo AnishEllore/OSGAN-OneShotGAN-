@@ -24,16 +24,15 @@ from keras.models import load_model
 from matplotlib import pyplot
 import os
 # define the standalone discriminator model
-def define_discriminator(in_shape=24, n_classes=10):
+def define_discriminator(in_shape=(23,), n_classes=10):
 	# label input
 	in_label = Input(shape=(1,))
 	# embedding for categorical input
 	li = Embedding(n_classes, 50)(in_label)
 	# scale up to image dimensions with linear activation
-	n_nodes = in_shape
+	n_nodes = 23
 	li = Dense(n_nodes)(li)
-	# reshape to additional channel
-	# image input
+	li = Reshape(in_shape)(li)
 	in_image = Input(shape=in_shape)
 	# concat label as a channel
 	merge = Concatenate()([in_image, li])
@@ -55,6 +54,7 @@ def define_generator(latent_dim, n_classes=2):
 	# linear multiplication
 	n_nodes = 128
 	li = Dense(n_nodes)(li)
+	li = Reshape((128,))(li)
 	# reshape to additional channel
 	# image generator input
 	in_lat = Input(shape=(latent_dim,))
@@ -70,7 +70,7 @@ def define_generator(latent_dim, n_classes=2):
 	# upsample to 28x28
 	gen = LeakyReLU(alpha=0.2)(gen)
 	# output
-	out_layer = Dense(24,activation='relu')(gen)
+	out_layer = Dense(23,activation='relu')(gen)
 	# define model
 	model = Model([in_lat, in_label], out_layer)
 	return model

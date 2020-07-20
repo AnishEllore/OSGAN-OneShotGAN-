@@ -3,8 +3,6 @@ import numpy as np
 import os
 import sys
 sys.path.append("..")
-from federated import FederatedDistributions
-from federated_google import FederatedLearning
 import pandas as pd
 import numpy as np
 from sklearn.utils import shuffle
@@ -12,9 +10,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 
-
-def classifier(in_shape=20):
+def classifier(in_shape=23):
 	model = tf.keras.models.Sequential()
 	model.add(tf.keras.layers.Dense(10, input_shape = (in_shape,), activation='relu'))
 	model.add(tf.keras.layers.Dense(10, activation='relu'))
@@ -53,7 +51,7 @@ X_Distributions = X
 # c = scaler.fit_transform(X)
 # X = pd.DataFrame(c)
 
-
+latent_dim = 50
 
 Y = df['Y']
 encoder = LabelEncoder()
@@ -64,6 +62,7 @@ c = scaler.fit_transform(X)
 X = pd.DataFrame(c)
 
 X.columns = X_Distributions.columns
+
 trainX, testX, trainY, testY = train_test_split(np.array(X), np.array(Y), test_size = 0.2, random_state = 0)
 
 d_model = define_discriminator()
@@ -72,25 +71,25 @@ g_model = define_generator(latent_dim)
 	# create the gan
 gan_model = define_gan(g_model, d_model)
 	# load datset
-dataset = load_real_samples(x_temp, y_temp)
-
-train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=1,client=i+1)
+dataset = [trainX,trainY]
+i=0
+train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=100,client=i+1)
 	# generate fake samples at the server
 n_samples = len(trainX)
 
 
 [x_fake, labels], _ = generate_fake_samples(g_model, latent_dim, n_samples)
 	# classify fake samples
-
+print(x_fake)
 y_fake = labels.reshape(-1,1)
 print(y_fake.shape)
 	# store the combined datset
 
 print('Complete')
 
-combined_model, combined_model_history = train_classifier(x_fake,y_fake,x_val=trainX,y_val=trainY,n_epochs=1)
+central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=100)
+combined_model, combined_model_history = train_classifier(x_fake,y_fake,x_val=trainX,y_val=trainY,n_epochs=100)
 
-central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=1)
 results = {}
 results['FGAN testing accuracy(original_data)'] = combined_model.evaluate(testX,testY,verbose=0)[1]*100
 results['Central model testing accuracy'] = central_model.evaluate(testX, testY, verbose=0)[1]*100
