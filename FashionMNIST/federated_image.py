@@ -2,29 +2,22 @@ from gan_utils import *
 import numpy as np
 import os
 from matplotlib import pyplot as plt
-
-from keras.datasets.cifar10 import load_data
-def classifier(in_shape=(32,32,3)):
-
+from keras.models import Sequential
+from keras.models import Sequential
+from keras.layers import Conv2D
+from keras.layers import MaxPooling2D
+from keras.layers import Dense
+from keras.layers import Flatten
+from keras.optimizers import SGD
+def classifier(in_shape=(28,28,1)):
 	model = Sequential()
-	model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(32, 32, 3)))
-	model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+	model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', input_shape=(28, 28, 1)))
 	model.add(MaxPooling2D((2, 2)))
-	model.add(Dropout(0.2))
-	model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
-	model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
-	model.add(MaxPooling2D((2, 2)))
-	model.add(Dropout(0.2))
-	model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
-	model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
-	model.add(MaxPooling2D((2, 2)))
-	model.add(Dropout(0.2))
 	model.add(Flatten())
-	model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
-	model.add(Dropout(0.2))
+	model.add(Dense(100, activation='relu', kernel_initializer='he_uniform'))
 	model.add(Dense(10, activation='softmax'))
 	# compile model
-	opt = SGD(lr=0.001, momentum=0.9)
+	opt = SGD(lr=0.01, momentum=0.9)
 	model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 	return model
 
@@ -50,26 +43,28 @@ Epochs=100
 (trainX, trainY), (testX, testY) = load_data()
 x = trainX
 y= trainY
-testX = load_real_samples(testX)
-trainX = load_real_samples(trainX)
+[testX,_] = load_real_samples(testX, testY)
+[trainX,_] = load_real_samples(trainX, trainY)
 node_data_set = []
 for i in range(0,clients):
 	print('client ',i)
 	x_temp = x[int((i*len(x)/clients)):int((i+1)*len(x)/clients)]
 	y_temp = y[int(i*len(x)/clients):int((i+1)*len(x)/clients)]
 	n_samples = len(y_temp)
-	dataset = load_real_samples(x_temp)
+	[dataset,_] = load_real_samples(x_temp, y_temp)
 	node_data_set.append((dataset,y_temp))
 training_accuracies=[]
 global_model = classifier()
 
 for i in range(0,Epochs):
 	models=[]
+	print('round',i)
 	for i in range(0,clients):
 		print('Running data on node ',i+1)
 		x_curr, y_curr = node_data_set[i]
 		current_model = classifier()
 		current_model.set_weights(global_model.get_weights())
+		
 		current_model.fit(x_curr, y_curr, epochs = 1)
 		models.append(current_model)
 	weights = [model.get_weights() for model in models]

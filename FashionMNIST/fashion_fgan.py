@@ -94,11 +94,11 @@ if not os.path.isdir('results'):
 results_save_path = 'results/gan_distributed_results.txt'
 
 with open(results_save_path, 'w') as f:
-
+	print('printing OSGAN accuracies',file=f)
 	print(combined_model_history.history['val_accuracy'],file=f)
 	print('printing other results',file=f)
 	print(results,file=f)
-	print('******central model****')
+	print('******central model****',file=f)
 	print(central_model_history.history['accuracy'],file=f)
 
 x_axis= x_axis = [i for i in range(1,len(central_model_history.history['accuracy'])+1)]
