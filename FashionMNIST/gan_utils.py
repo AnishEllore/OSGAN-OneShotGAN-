@@ -4,7 +4,6 @@ from numpy import zeros
 from numpy import ones
 from numpy.random import randn
 from numpy.random import randint
-from keras.datasets.fashion_mnist import load_data
 from keras.optimizers import Adam
 from keras.models import Model
 from keras.layers import Input
@@ -150,7 +149,7 @@ def generate_fake_samples(generator, latent_dim, n_samples):
 	return [images, labels_input], y
 
 
-def save_plot(examples, n,epoch=1,client=1):
+def save_plot(examples, n,epoch=1,client=1,dirname=''):
 	# plot images
 	for i in range(n * n):
 		# define subplot
@@ -160,7 +159,7 @@ def save_plot(examples, n,epoch=1,client=1):
 		# plot raw pixel data
 		pyplot.imshow(examples[i, :, :, 0], cmap='gray_r')
 	
-	dirname = 'results_plots'+'_client_'+str(client)
+	dirname = dirname+'/results_plots'+'_client_'+str(client)
 	if not os.path.isdir(dirname):
 		os.makedirs(dirname)
 	filename = dirname+'/generated_plot_e%03d.png' % (epoch+1)
@@ -169,7 +168,7 @@ def save_plot(examples, n,epoch=1,client=1):
 
 
 
-def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1):
+def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1,dirname=''):
 	
 	
 	latent_points, labels = generate_latent_points(100, 100)
@@ -180,8 +179,8 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 	# scale from [-1,1] to [0,1]
 	X = (X + 1) / 2.0
 	# plot the result
-	save_plot(X, 10,epoch=epoch, client=client)	
-	dirname='generator_models'+'_client_'+str(client)
+	save_plot(X, 10,epoch=epoch, client=client,dirname='dirname')	
+	dirname=dirname+'generator_models'+'_client_'+str(client)
 	if not os.path.isdir(dirname):
 		os.makedirs(dirname)
 	filename = dirname+'/generator_model_%03d.h5' % (epoch + 1)
@@ -190,7 +189,10 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 
 
 # train the generator and discriminator
-def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batch=128, client=1):
+def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batch=128, client=1,dirname=None):
+	if dirname!= None:
+		if not os.path.isdir(dirname):
+			os.makedirs(dirname)
 	
 	bat_per_epo = int(dataset[0].shape[0] / n_batch)
 	half_batch = int(n_batch / 2)
@@ -218,5 +220,5 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 				(i+1, j+1, bat_per_epo, d_loss1, d_loss2, g_loss))
 		# save the generator model
 		if (i+1) % 10 == 0:
-			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client)
+			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client,dirname=dirname)
 
