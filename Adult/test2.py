@@ -68,10 +68,12 @@ print(x)
 
 X_Distributions = X
 latent_dim=100
+clients=10
+
 trainX, testX, trainY, testY = train_test_split(np.array(X), np.array(Y), test_size = 0.2, random_state = 0)
 
 d_model = define_discriminator()
-	# create the generator
+	# create the generatorg
 g_model = define_generator(latent_dim)
 	# create the gan
 gan_model = define_gan(g_model, d_model)

@@ -5,7 +5,7 @@ from numpy import ones
 from numpy import vstack
 from numpy.random import randn
 from numpy.random import randint
-from keras.datasets.mnist import load_data
+
 from keras.optimizers import Adam
 from keras.models import Sequential
 from keras.layers import Dense
@@ -108,7 +108,7 @@ def generate_fake_samples(g_model, latent_dim, n_samples):
 	return X, y
 
 # create and save a plot of generated images (reversed grayscale)
-def save_plot(examples, epoch, n=5,client=1):
+def save_plot(examples, epoch, n=5,client=1,dirname=''):
 	# plot images
 	for i in range(n * n):
 		# define subplot
@@ -118,7 +118,7 @@ def save_plot(examples, epoch, n=5,client=1):
 		# plot raw pixel data
 		pyplot.imshow(examples[i, :, :, 0], cmap='gray_r')
 	# save plot to file
-	dirname = 'results_plots'+'_client_'+str(client)
+	dirname = dirname+'/results_plots'+'_client_'+str(client)
 	if not os.path.isdir(dirname):
 		os.makedirs(dirname)
 	filename = dirname+'/generated_plot_e%03d.png' % (epoch+1)
@@ -126,7 +126,7 @@ def save_plot(examples, epoch, n=5,client=1):
 	pyplot.close()
 
 # evaluate the discriminator, plot generated images, save generator model
-def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1):
+def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1,dirname=''):
 	# prepare real samples
 	X_real, y_real = generate_real_samples(dataset, n_samples)
 	# evaluate discriminator on real examples
@@ -140,14 +140,17 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 	# save plot
 	save_plot(x_fake, epoch,client=client)
 	# save the generator model tile file
-	dirname='generator_models'+'_client_'+str(client)
+	dirname=dirname+'/generator_models'+'_client_'+str(client)
 	if not os.path.isdir(dirname):
 		os.makedirs(dirname)
 	filename = dirname+'/generator_model_%03d.h5' % (epoch + 1)
 	g_model.save(filename)
 
 # train the generator and discriminator
-def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client = 1, n_batch=256):
+def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client = 1, n_batch=256,dirname=None):
+	if dirname!= None:
+		if not os.path.isdir(dirname):
+			os.makedirs(dirname)
 	bat_per_epo = int(dataset.shape[0] / n_batch)
 	half_batch = int(n_batch / 2)
 	# manually enumerate epochs
@@ -172,7 +175,7 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client
 			print('>%d, %d/%d, d=%.3f, g=%.3f' % (i+1, j+1, bat_per_epo, d_loss, g_loss))
 		# evaluate the model performance, sometimes
 		if (i+1) % 10 == 0:
-			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client)
+			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client,dirname=dirname)
 
 '''
 # size of the latent space

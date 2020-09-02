@@ -32,8 +32,8 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	
 # size of the latent space
 latent_dim = 100
-clients = 10
-DIRNAME='iid'
+clients = 2
+DIRNAME='non-iid'
 (trainX, trainY), (testX, testY) = load_data()
 x = trainX
 y= trainY
@@ -57,9 +57,9 @@ for i in range(0,clients):
 	# load datset
 	dataset = load_real_samples(x_temp)
 	# train image classifier
-	image_model, _ = train_classifier(dataset,y_temp,n_epochs=100)
+	image_model, _ = train_classifier(dataset,y_temp,n_epochs=1)
 	# train gan model
-	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=200,client=i+1, dirname=DIRNAME)
+	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=1,client=i+1, dirname=DIRNAME)
 	# generate fake samples at the server
 	x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
 	# classify fake samples
@@ -76,9 +76,9 @@ for i in range(0,clients):
 
 print('Complete')
 
-combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=100)
+combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=1)
 
-central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=100)
+central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=1)
 results = {}
 
 
