@@ -180,7 +180,7 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 	X = (X + 1) / 2.0
 	# plot the result
 	save_plot(X, 10,epoch=epoch, client=client,dirname='dirname')	
-	dirname=dirname+'generator_models'+'_client_'+str(client)
+	dirname=dirname+'/generator_models'+'_client_'+str(client)
 	if not os.path.isdir(dirname):
 		os.makedirs(dirname)
 	filename = dirname+'/generator_model_%03d.h5' % (epoch + 1)

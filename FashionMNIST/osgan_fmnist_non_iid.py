@@ -36,7 +36,7 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	return model_main, history
 	
 # size of the latent space
-latent_dim = 100
+latent_dim = 20
 clients = 10
 DIRNAME='non_iid'
 (trainX, trainY), (testX, testY) = load_data()
