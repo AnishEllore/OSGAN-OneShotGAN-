@@ -9,6 +9,8 @@ from keras.layers import MaxPooling2D
 from keras.layers import Dense
 from keras.layers import Flatten
 from keras.optimizers import SGD
+from keras.datasets.fashion_mnist import load_data
+
 def classifier(in_shape=(28,28,1)):
 	model = Sequential()
 	model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', input_shape=(28, 28, 1)))
@@ -60,14 +62,14 @@ for i in range(0,clients):
 	# load datset
 	dataset = load_real_samples(x_temp, y_temp)
 	# train image classifier
-	image_model, _ = train_classifier(dataset[0],y_temp,n_epochs=100)
+	#image_model, _ = train_classifier(dataset[0],y_temp,n_epochs=100)
 	# train gan model
 	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=200,client=i+1,dirname=DIRNAME)
 	# generate fake samples at the server
 	[x_fake, labels], _ = generate_fake_samples(g_model, latent_dim, n_samples)
 	# classify fake samples
-	y_fake = image_model.predict_classes(x_fake)
-	y_fake = y_fake.reshape(-1,1)
+	#y_fake = image_model.predict_classes(x_fake)
+	y_fake = labels.reshape(-1,1)
 	print(y_fake.shape)
 	# store the combined datset
 	if i==0:
