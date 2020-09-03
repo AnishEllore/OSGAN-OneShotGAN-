@@ -34,6 +34,13 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 latent_dim = 100
 clients = 10
 Epochs=100
+IID = False
+DIRNAME='Federated'
+if IID:
+	DIRNAME= DIRNAME+'_IID'
+else:
+	DIRNAME= DIRNAME+'_Non_IID'
+
 (trainX, trainY), (testX, testY) = load_data()
 x = trainX
 y= trainY
@@ -42,8 +49,13 @@ trainX = load_real_samples(trainX)
 node_data_set = []
 for i in range(0,clients):
 	print('client ',i)
-	x_temp = x[int((i*len(x)/clients)):int((i+1)*len(x)/clients)]
-	y_temp = y[int(i*len(x)/clients):int((i+1)*len(x)/clients)]
+	if IID:
+		x_temp = x[int((i*len(x)/clients)):int((i+1)*len(x)/clients)]
+		y_temp = y[int(i*len(x)/clients):int((i+1)*len(x)/clients)]
+	else:
+		x_temp = x[y==i]
+		y_temp = y[y==i]
+
 	n_samples = len(y_temp)
 	dataset = load_real_samples(x_temp)
 	node_data_set.append((dataset,y_temp))
@@ -74,7 +86,7 @@ print('Complete')
 results={}
 results['federated global model testing accuracy'] = global_model.evaluate(testX,testY)[1]*100
 
-results_dir = 'federated_google_results'
+results_dir = DIRNAME
 if not os.path.isdir(results_dir):
 	os.makedirs(results_dir)
 
