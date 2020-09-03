@@ -147,7 +147,7 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 	g_model.save(filename)
 
 # train the generator and discriminator
-def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client = 1, n_batch=256,dirname=None):
+def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client = 1, n_batch=128,dirname=None):
 	if dirname!= None:
 		if not os.path.isdir(dirname):
 			os.makedirs(dirname)

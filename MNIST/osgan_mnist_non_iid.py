@@ -1,8 +1,11 @@
-from gan_test import *
+from gan_utils import *
 import numpy as np
 import os
 from matplotlib import pyplot as plt
 from keras.datasets.mnist import load_data
+from keras.models import load_model
+import random
+from sklearn.utils import shuffle
 def classifier(in_shape=(28,28,1)):
 	model = Sequential()
 	model.add(Conv2D(64, (3,3), strides=(2, 2), padding='same', input_shape=in_shape))
@@ -32,9 +35,9 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	return model_main, history
 	
 # size of the latent space
-latent_dim = 100
+latent_dim = 20
 clients = 10
-DIRNAME='non_iid'
+DIRNAME='non_iid_latent_dim_20'
 (trainX, trainY), (testX, testY) = load_data()
 x = trainX
 y= trainY
@@ -57,15 +60,15 @@ for i in range(0,clients):
 	gan_model = define_gan(g_model, d_model)
 	# load datset
 	dataset = load_real_samples(x_temp)
-	# train image classifier
-	image_model, _ = train_classifier(dataset,y_temp,n_epochs=100)
+	
+	# path = 'non_iid/generator_models_client_'+str(i+1)+'/generator_model_200.h5'
+	# g_model = load_model(path)
 	# train gan model
-	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=200,client=i+1, dirname=DIRNAME)
+	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=100,client=i+1, dirname=DIRNAME)
 	# generate fake samples at the server
 	x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
 	# classify fake samples
-	y_fake = image_model.predict_classes(x_fake)
-	y_fake = y_fake.reshape(-1,1)
+	y_fake = y_temp.reshape(-1,1)
 	print(y_fake.shape)
 	# store the combined datset
 	if i==0:
@@ -76,6 +79,10 @@ for i in range(0,clients):
 		combined_datset_y = np.vstack((combined_datset_y,y_fake))
 
 print('Complete')
+
+
+
+combined_datset_x, combined_datset_y = shuffle(combined_datset_x, combined_datset_y)
 
 combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=100)
 

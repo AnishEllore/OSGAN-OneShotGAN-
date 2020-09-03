@@ -1,4 +1,4 @@
-from gan_test import *
+from gan_utils import *
 import numpy as np
 import os
 from matplotlib import pyplot as plt
