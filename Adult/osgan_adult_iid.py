@@ -51,7 +51,7 @@ df = DF
 categorical=[2,4,6,7,8,9,10,14,15]
 
 for i in categorical:  
-	print(i)
+	#print(i)
 	encoder = LabelEncoder()
 	encoder.fit(df[i-1])
 	df[i-1] = encoder.transform(df[i-1])
@@ -76,28 +76,28 @@ combined_datset_x = []
 combined_datset_y = []
 for i in range(0,clients):
 
-    print('client ',i)
+	print('client ',i)
 	x_temp = x[int((i*len(x)/clients)):int((i+1)*len(x)/clients)]
 	y_temp = y[int(i*len(x)/clients):int((i+1)*len(x)/clients)]
 	n_samples = len(y_temp)
 
 
-    d_model = define_discriminator()
+	d_model = define_discriminator()
 	# create the generatorg
-    g_model = define_generator(latent_dim)
+	g_model = define_generator(latent_dim)
 	# create the gan
-    gan_model = define_gan(g_model, d_model)
-    # train gan model
-    train(g_model, d_model, gan_model, x_temp, latent_dim,n_epochs=100,client=i+1)
+	gan_model = define_gan(g_model, d_model)
+	# train gan model
+	train(g_model, d_model, gan_model, x_temp, latent_dim,n_epochs=100,client=i+1)
 
-    image_model, _ = train_classifier(x_temp,y_temp,n_epochs=100)
-    # generate fake samples at the server
-    x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
-    # classify fake samples
-    y_fake = image_model.predict_classes(x_fake)
-    y_fake = y_fake.reshape(-1,1)
+	image_model, _ = train_classifier(x_temp,y_temp,n_epochs=100)
+	# generate fake samples at the server
+	x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
+	# classify fake samples
+	y_fake = image_model.predict_classes(x_fake)
+	y_fake = y_fake.reshape(-1,1)
 
-    # store the combined datset
+	# store the combined datset
 	if i==0:
 		combined_datset_x = x_fake
 		combined_datset_y = y_fake

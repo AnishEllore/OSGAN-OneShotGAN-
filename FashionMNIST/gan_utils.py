@@ -129,19 +129,22 @@ def generate_real_samples(dataset, n_samples):
 	return [X, labels], y
 
 # generate points in latent space as input for the generator
-def generate_latent_points(latent_dim, n_samples, n_classes=10):
+def generate_latent_points(latent_dim, n_samples, n_classes=10,client=1):
 	# generate points in the latent space
 	x_input = randn(latent_dim * n_samples)
 	# reshape into a batch of inputs for the network
 	z_input = x_input.reshape(n_samples, latent_dim)
 	# generate labels
-	labels = randint(0, n_classes, n_samples)
+	if n_classes==1:
+		labels = randint(client-1, client, n_samples)
+	else:	
+		labels = randint(0, n_classes, n_samples)
 	return [z_input, labels]
 
 # use the generator to generate n fake examples, with class labels
-def generate_fake_samples(generator, latent_dim, n_samples):
+def generate_fake_samples(generator, latent_dim, n_samples,client=1,n_classes=10):
 	# generate points in latent space
-	z_input, labels_input = generate_latent_points(latent_dim, n_samples)
+	z_input, labels_input = generate_latent_points(latent_dim, n_samples,client=client,n_classes=n_classes)
 	# predict outputs
 	images = generator.predict([z_input, labels_input])
 	# create class labels
@@ -168,18 +171,18 @@ def save_plot(examples, n,epoch=1,client=1,dirname=''):
 
 
 
-def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1,dirname=''):
+def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_samples=100,client=1,dirname='',n_classes=10):
 	
 	
-	latent_points, labels = generate_latent_points(100, 100)
+	latent_points, labels = generate_latent_points(latent_dim, 100,client=client,n_classes=n_classes)
 	# specify labels
-	labels = asarray([x for _ in range(10) for x in range(10)])
+	labels = asarray([client-1 for _ in range(10) for x in range(10)])
 	# generate images
 	X  = g_model.predict([latent_points, labels])
 	# scale from [-1,1] to [0,1]
 	X = (X + 1) / 2.0
 	# plot the result
-	save_plot(X, 10,epoch=epoch, client=client,dirname='dirname')	
+	save_plot(X, 10,epoch=epoch, client=client,dirname=dirname)	
 	dirname=dirname+'/generator_models'+'_client_'+str(client)
 	if not os.path.isdir(dirname):
 		os.makedirs(dirname)
@@ -189,7 +192,7 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 
 
 # train the generator and discriminator
-def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batch=128, client=1,dirname=None):
+def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batch=256, client=1,dirname=None,n_classes=10):
 	if dirname!= None:
 		if not os.path.isdir(dirname):
 			os.makedirs(dirname)
@@ -206,11 +209,11 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 			# update discriminator model weights
 			d_loss1, _ = d_model.train_on_batch([X_real, labels_real], y_real)
 			# generate 'fake' examples
-			[X_fake, labels], y_fake = generate_fake_samples(g_model, latent_dim, half_batch)
+			[X_fake, labels], y_fake = generate_fake_samples(g_model, latent_dim, half_batch,client=client)
 			# update discriminator model weights
 			d_loss2, _ = d_model.train_on_batch([X_fake, labels], y_fake)
 			# prepare points in latent space as input for the generator
-			[z_input, labels_input] = generate_latent_points(latent_dim, n_batch)
+			[z_input, labels_input] = generate_latent_points(latent_dim, n_batch, n_classes=n_classes,client=client)
 			# create inverted labels for the fake samples
 			y_gan = ones((n_batch, 1))
 			# update the generator via the discriminator's error
@@ -220,5 +223,5 @@ def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, n_batc
 				(i+1, j+1, bat_per_epo, d_loss1, d_loss2, g_loss))
 		# save the generator model
 		if (i+1) % 10 == 0:
-			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client,dirname=dirname)
+			summarize_performance(i, g_model, d_model, dataset, latent_dim,client=client,dirname=dirname,n_classes=n_classes)
 
