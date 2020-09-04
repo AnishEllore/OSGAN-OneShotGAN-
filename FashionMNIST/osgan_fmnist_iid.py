@@ -36,8 +36,8 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	
 # size of the latent space
 latent_dim = 100
-clients = 2
-DIRNAME='non_iid'
+clients = 1
+DIRNAME='iid_clients'+str(clients)
 (trainX, trainY), (testX, testY) = load_data()
 x = trainX
 y= trainY

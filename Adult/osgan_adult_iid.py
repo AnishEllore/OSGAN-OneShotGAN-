@@ -68,7 +68,7 @@ Y = df[LABEL]
 
 latent_dim=100
 clients=10
-DIRNAME='iid'
+DIRNAME='iid_clients_'+str(clients)
 trainX, testX, trainY, testY = train_test_split(np.array(X), np.array(Y), test_size = 0.2, random_state = 0)
 x = trainX
 y= trainY
