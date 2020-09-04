@@ -36,7 +36,7 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	return model_main, history
 	
 # size of the latent space
-latent_dim = 20
+latent_dim = 100
 clients = 10
 DIRNAME='non_iid_latent_dim_'+str(latent_dim)
 (trainX, trainY), (testX, testY) = load_data()
@@ -48,7 +48,7 @@ y= trainY
 #combined_datset_y = np.empty_like(y)
 combined_datset_x = []
 combined_datset_y = []
-for i in range(5,clients):
+for i in range(0,clients):
 	print('client ',i)
 	x_temp = x[y==i]
 	y_temp = y[y==i]
@@ -64,7 +64,7 @@ for i in range(5,clients):
 	# train image classifier
 	#image_model, _ = train_classifier(dataset[0],y_temp,n_epochs=100)
 	# train gan model
-	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=200,client=i+1,dirname=DIRNAME,n_classes=1)
+	train(g_model, d_model, gan_model, dataset, latent_dim,n_epochs=300,client=i+1,dirname=DIRNAME,n_classes=1)
 	# generate fake samples at the server
 	[x_fake, labels], _ = generate_fake_samples(g_model, latent_dim, n_samples,client=i+1,n_classes=1)
 	# classify fake samples
