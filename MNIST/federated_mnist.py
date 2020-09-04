@@ -1,6 +1,7 @@
-from gan_test import *
+from gan_utils import *
 import numpy as np
 import os
+from keras.datasets.mnist import load_data
 from matplotlib import pyplot as plt
 def classifier(in_shape=(28,28,1)):
 	model = Sequential()
