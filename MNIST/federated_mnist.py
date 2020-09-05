@@ -3,6 +3,7 @@ import numpy as np
 import os
 from keras.datasets.mnist import load_data
 from matplotlib import pyplot as plt
+from tensorflow.keras.backend import clear_session
 def classifier(in_shape=(28,28,1)):
 	model = Sequential()
 	model.add(Conv2D(64, (3,3), strides=(2, 2), padding='same', input_shape=in_shape))
@@ -60,9 +61,15 @@ def run(CLIENTS=10,iid =True):
 		dataset = load_real_samples(x_temp)
 		node_data_set.append((dataset,y_temp))
 	training_accuracies=[]
-	global_model = classifier()
-
+	
+	new_weights = list()
 	for index in range(0,Epochs):
+		clear_session()
+		global_model = classifier()
+		try:
+			global_model.set_weights(new_weights)
+		except:
+			print('an exception occured')
 		models=[]
 		print('communication round ',index+1)
 		for i in range(0,clients):
@@ -73,7 +80,9 @@ def run(CLIENTS=10,iid =True):
 			current_model.fit(x_curr, y_curr, epochs = 1)
 			models.append(current_model)
 		weights = [model.get_weights() for model in models]
-		new_weights = list()
+		del models
+		
+		new_weights.clear()
 
 		for weights_list_tuple in zip(*weights):
 			new_weights.append(
@@ -101,3 +110,4 @@ print('non-iid completed')
 CLIENTS=[1,2,25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
+	clear_session()
