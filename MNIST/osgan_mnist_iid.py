@@ -84,7 +84,7 @@ def run(CLIENTS=10, LATENT_DIM=100):
 	results = {}
 
 
-	results['Fusion testing accuracy(original_data)'] = combined_model.evaluate(testX,testY,verbose=0)[1]*100
+	results['OSGAN testing accuracy(original_data)'] = combined_model.evaluate(testX,testY,verbose=0)[1]*100
 	results['Central model testing accuracy'] = central_model.evaluate(testX, testY, verbose=0)[1]*100
 
 	dirname=DIRNAME+'/results'
