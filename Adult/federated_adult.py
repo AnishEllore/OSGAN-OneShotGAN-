@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-
+from tensorflow.keras.backend import clear_session
 def classifier(in_shape=14):
 	model = tf.keras.models.Sequential()
 	model.add(tf.keras.layers.Dense(10, input_shape = (in_shape,), activation='relu'))
@@ -97,26 +97,33 @@ def run(CLIENTS=10):
 		node_data_set.append((dataset,y_temp))
 	training_accuracies=[]
 	global_model = classifier()
-
+	current_model_same=classifier()
+	new_weights = list()
 	for index in range(0,Epochs):
-		models=[]
+		global_model.set_weights(new_weights)
+		# try:
+			
+		# except:
+		# 	print('an exception occured')
+		weights=[]
 		print('communication round ',index+1)
 		for i in range(0,clients):
 			print('Running data on node ',i+1)
 			x_curr, y_curr = node_data_set[i]
-			current_model = classifier()
+			current_model = current_model_same
 			current_model.set_weights(global_model.get_weights())
 			current_model.fit(x_curr, y_curr, epochs = 1)
-			models.append(current_model)
-		weights = [model.get_weights() for model in models]
-		new_weights = list()
-
+			weights.append(current_model.get_weights())
+		
+		new_weights.clear()
+		
 		for weights_list_tuple in zip(*weights):
 			new_weights.append(
 				np.array([np.array(w).mean(axis=0) for w in zip(*weights_list_tuple)]))
 
 		global_model.set_weights(new_weights)
 		training_accuracy = global_model.evaluate(trainX,y)[1]
+		print(training_accuracy)
 		training_accuracies.append(training_accuracy)
 
 	print('Complete')
@@ -136,4 +143,5 @@ def run(CLIENTS=10):
 CLIENTS=[1,2,25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
+	clear_session()
 	print('****************part completed****************')

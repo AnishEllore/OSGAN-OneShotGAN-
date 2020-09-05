@@ -1,4 +1,4 @@
-from gan_utils import *
+#from gan_utils import *
 import numpy as np
 import os
 import sys
@@ -149,3 +149,4 @@ def run(CLIENTS=10, LATENT_DIM=100):
 CLIENTS=[1,2,25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
+	clear_session()
