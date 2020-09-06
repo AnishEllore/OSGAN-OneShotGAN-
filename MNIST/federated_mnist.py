@@ -34,7 +34,7 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	
 def run(CLIENTS=10,iid =True):
 	clients = CLIENTS
-	Epochs=100
+	Epochs=5
 	IID = iid
 	DIRNAME='Federated_clients_'+str(clients)
 	if IID:
@@ -66,11 +66,12 @@ def run(CLIENTS=10,iid =True):
 	for index in range(0,Epochs):
 		clear_session()
 		global_model = classifier()
-		try:
-			global_model.set_weights(new_weights)
-		except:
-			print('an exception occured')
-		models=[]
+		global_model.set_weights(new_weights)
+		# try:
+			
+		# except:
+		# 	print('an exception occured')
+		weights=[]
 		print('communication round ',index+1)
 		for i in range(0,clients):
 			print('Running data on node ',i+1)
@@ -78,20 +79,21 @@ def run(CLIENTS=10,iid =True):
 			current_model = classifier()
 			current_model.set_weights(global_model.get_weights())
 			current_model.fit(x_curr, y_curr, epochs = 1)
-			models.append(current_model)
-		weights = [model.get_weights() for model in models]
-		del models
+			weights.append(current_model.get_weights())
+			del current_model
 		
 		new_weights.clear()
 
 		for weights_list_tuple in zip(*weights):
 			new_weights.append(
 				np.array([np.array(w).mean(axis=0) for w in zip(*weights_list_tuple)]))
-
+		del weights
 		global_model.set_weights(new_weights)
 		training_accuracy = global_model.evaluate(trainX,y)[1]
+		del global_model
 		training_accuracies.append(training_accuracy)
-
+	global_model = classifier()
+	global_model.set_weights(new_weights)
 	print('Complete')
 	results={}
 	results['federated global model testing accuracy'] = global_model.evaluate(testX,testY)[1]*100
@@ -107,7 +109,7 @@ def run(CLIENTS=10,iid =True):
 
 run(CLIENTS=10,iid = False)
 print('non-iid completed')
-CLIENTS=[1,2,25,50]
+CLIENTS=[25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
 	clear_session()
