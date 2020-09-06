@@ -25,12 +25,13 @@ label='OSGAN Non-IID')
 rects2 = plt.bar(index + bar_width, means_global, bar_width,
 alpha=opacity,
 label='Federated Non-IID')
-
+plt.grid(True)
 plt.xlabel('Dataset')
 plt.ylabel('Testing accuracy')
 plt.xticks(index + bar_width/4, ('MNIST', 'FMNIST'))
 plt.ylim(75,100)
 plt.legend(loc='upper right')
+
 
 plt.tight_layout()
 
