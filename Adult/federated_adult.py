@@ -139,7 +139,7 @@ def run(CLIENTS=10):
 		print(results,file=f)
 
 
-CLIENTS=[1,2,25,50]
+CLIENTS=[10,1,2,25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
 	clear_session()
