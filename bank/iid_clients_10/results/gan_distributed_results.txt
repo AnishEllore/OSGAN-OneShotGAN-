@@ -1,0 +1,5 @@
+[0.8828527927398682]
+printing other results
+{'OSGAN testing accuracy(original_data)': 87.54552006721497, 'Central model testing accuracy': 90.27676582336426}
+******central model****
+[0.8853414058685303]
