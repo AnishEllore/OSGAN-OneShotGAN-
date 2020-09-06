@@ -34,7 +34,7 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 	
 def run(CLIENTS=10,iid =True):
 	clients = CLIENTS
-	Epochs=5
+	Epochs=100
 	IID = iid
 	DIRNAME='Federated_clients_'+str(clients)
 	if IID:

@@ -1,4 +1,4 @@
-#from gan_utils import *
+from gan_utils import *
 import numpy as np
 import os
 import sys
