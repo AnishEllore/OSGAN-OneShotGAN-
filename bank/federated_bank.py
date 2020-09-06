@@ -104,7 +104,7 @@ def run(CLIENTS=10):
 	current_model_same=classifier()
 	new_weights = list()
 	for index in range(0,Epochs):
-		global_model.set_weights(new_weights)
+		#global_model.set_weights(new_weights)
 		# try:
 			
 		# except:
@@ -144,7 +144,7 @@ def run(CLIENTS=10):
 		print(results,file=f)
 
 
-CLIENTS=[1,2,25,50]
+CLIENTS=[10,1,2,25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
 	clear_session()
