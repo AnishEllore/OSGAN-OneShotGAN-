@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-
+from tensorflow.keras.backend import clear_session
 def classifier(in_shape=20):
 	model = tf.keras.models.Sequential()
 	model.add(tf.keras.layers.Dense(10, input_shape = (in_shape,), activation='relu'))
