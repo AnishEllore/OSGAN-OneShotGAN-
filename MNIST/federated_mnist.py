@@ -63,9 +63,9 @@ def run(CLIENTS=10,iid =True):
 	training_accuracies=[]
 	
 	new_weights = list()
+	global_model = classifier()
+	current_model_same=classifier()
 	for index in range(0,Epochs):
-		clear_session()
-		global_model = classifier()
 		global_model.set_weights(new_weights)
 		# try:
 			
@@ -76,11 +76,10 @@ def run(CLIENTS=10,iid =True):
 		for i in range(0,clients):
 			print('Running data on node ',i+1)
 			x_curr, y_curr = node_data_set[i]
-			current_model = classifier()
+			current_model = current_model_same
 			current_model.set_weights(global_model.get_weights())
 			current_model.fit(x_curr, y_curr, epochs = 1)
 			weights.append(current_model.get_weights())
-			del current_model
 		
 		new_weights.clear()
 
@@ -90,7 +89,7 @@ def run(CLIENTS=10,iid =True):
 		del weights
 		global_model.set_weights(new_weights)
 		training_accuracy = global_model.evaluate(trainX,y)[1]
-		del global_model
+		print(training_accuracy)
 		training_accuracies.append(training_accuracy)
 	global_model = classifier()
 	global_model.set_weights(new_weights)
@@ -107,8 +106,8 @@ def run(CLIENTS=10,iid =True):
 		print('printing other results',file=f)
 		print(results,file=f)
 
-run(CLIENTS=10,iid = False)
-print('non-iid completed')
+# run(CLIENTS=10,iid = False)
+# print('non-iid completed')
 CLIENTS=[25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
