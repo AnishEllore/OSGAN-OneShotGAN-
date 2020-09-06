@@ -100,7 +100,6 @@ def run(CLIENTS=10):
 	current_model_same=classifier()
 	new_weights = list()
 	for index in range(0,Epochs):
-		global_model.set_weights(new_weights)
 		# try:
 			
 		# except:
