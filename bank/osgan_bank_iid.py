@@ -35,14 +35,14 @@ def train_classifier(x,y,x_val=None,y_val=None,n_epochs=100):
 		# print('***********done**************')
 	return model_main, history
 	
-scaler = StandardScaler()
+#scaler = StandardScaler()
 
 df = pd.read_csv('bank-additional-full.csv',header=None,sep=';')
 	# df2 = pd.read_csv('trial.csv')
 df = shuffle(df).reset_index(drop=True)
 
-scaler = StandardScaler()
-	# scaler = MinMaxScaler()
+#scaler = StandardScaler()
+scaler = MinMaxScaler()
 
 LABEL = df.columns[-1]
 df.dropna()
@@ -74,7 +74,7 @@ def run(CLIENTS=10, LATENT_DIM=100):
 	latent_dim = LATENT_DIM
 	clients = CLIENTS
 
-	DIRNAME='iid_clients_'+str(clients)
+	DIRNAME='test_iid_clients_'+str(clients)
 	trainX, testX, trainY, testY = train_test_split(np.array(X), np.array(Y), test_size = 0.2, random_state = 0)
 	x = trainX
 	y= trainY
@@ -94,9 +94,9 @@ def run(CLIENTS=10, LATENT_DIM=100):
 		# create the gan
 		gan_model = define_gan(g_model, d_model)
 		# train gan model
-		train(g_model, d_model, gan_model, x_temp, latent_dim,n_epochs=100,client=i+1)
+		train(g_model, d_model, gan_model, x_temp, latent_dim,n_epochs=1,client=i+1)
 
-		image_model, _ = train_classifier(x_temp,y_temp,n_epochs=100)
+		image_model, _ = train_classifier(x_temp,y_temp,n_epochs=1)
 		# generate fake samples at the server
 		x_fake, _ = generate_fake_samples(g_model, latent_dim, n_samples)
 		# classify fake samples
@@ -115,8 +115,8 @@ def run(CLIENTS=10, LATENT_DIM=100):
 
 	print('Complete')
 
-	central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=100)
-	combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=100)
+	central_model, central_model_history = train_classifier(trainX,trainY,n_epochs=1)
+	combined_model, combined_model_history = train_classifier(combined_datset_x,combined_datset_y,x_val=trainX,y_val=trainY,n_epochs=1)
 
 	results = {}
 	results['OSGAN testing accuracy(original_data)'] = combined_model.evaluate(testX,testY,verbose=0)[1]*100
@@ -152,7 +152,8 @@ def run(CLIENTS=10, LATENT_DIM=100):
 
 
 
-CLIENTS=[10,1,2,25,50]
+CLIENTS=[1,2,10,25,50]
 for index in CLIENTS:
 	run(CLIENTS=index)
+	print('*******************completed***************')
 	clear_session()

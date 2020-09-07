@@ -137,6 +137,8 @@ def summarize_performance(epoch, g_model, d_model, dataset, latent_dim, n_sample
 
 # train the generator and discriminator
 def train(g_model, d_model, gan_model, dataset, latent_dim, n_epochs=100, client = 1, n_batch=128):
+	print('*****************')
+	print(dataset.shape[0])
 	bat_per_epo = int(dataset.shape[0] / n_batch)
 	half_batch = int(n_batch / 2)
 	# manually enumerate epochs
