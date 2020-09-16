@@ -21,7 +21,7 @@
    conda create --name <env> --file requirements.txt
    ```
 
-3. Alternative easy option
+4. Alternative easy option
 
    ```sh
    Create Azure datascience VM
@@ -56,21 +56,28 @@
    python3 federated_dataset.py
    ```
 
-## Plots:
+## Folder structure
 
-Plots folder contains the generated plots for the paper (Results are taken from corresponding folder)
-<br/>
+1. Plots
 
-## Dataset:
+   ```sh
+   Plots folder contains the generated plots for the paper (Results are taken from corresponding folder)
+   ```
 
-Each dataset has a corresponding folder, where results are divided based on clients, IID setup and the algorithm (OSGAN, Federated)
-<br/>
+2. Dataset
 
-### Fashion MNIST:
+   ```sh
+   Each dataset has a corresponding folder, where results are divided based on clients, IID setup and the algorithm (OSGAN, Federated)
+   ```
 
-For Fashion MNIST dataset we have two folders, where one folder contains the implementation of CGAN based OSGAN and other cantains GAN based OSGAN
+3.  Fashion MNIST
 
-#### Results:
+   ```sh
+   For Fashion MNIST dataset we have two folders, where one folder contains the implementation of CGAN based OSGAN and other cantains GAN based OSGAN
+   ```
 
-Results folder in each setup wise results folder contains information regarding testing accuracy and training accuracies
+4. Results
 
+   ```sh
+   Results folder in each setup wise results folder contains information regarding testing accuracy and training accuracies
+   ```
