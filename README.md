@@ -61,23 +61,27 @@
 1. Plots
 
    ```sh
-   Plots folder contains the generated plots for the paper (Results are taken from corresponding folder)
+   Plots folder contains the generated plots for the paper 
+   (Results are taken from corresponding folder)
    ```
 
 2. Dataset
 
    ```sh
-   Each dataset has a corresponding folder, where results are divided based on clients, IID setup and the algorithm (OSGAN, Federated)
+   Each dataset has a corresponding folder, where results are divided 
+   based on clients, IID setup and the algorithm (OSGAN, Federated)
    ```
 
 3.  Fashion MNIST
 
    ```sh
-   For Fashion MNIST dataset we have two folders, where one folder contains the implementation of CGAN based OSGAN and other cantains GAN based OSGAN
+   For Fashion MNIST dataset we have two folders, where one folder contains 
+   the implementation of CGAN based OSGAN and other cantains GAN based OSGAN
    ```
 
 4. Results
 
    ```sh
-   Results folder in each setup wise results folder contains information regarding testing accuracy and training accuracies
+   Results folder in each setup wise results folder contains 
+   information regarding testing accuracy and training accuracies
    ```
