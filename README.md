@@ -72,7 +72,7 @@
    based on clients, IID setup and the algorithm (OSGAN, Federated)
    ```
 
-3.  Fashion MNIST
+3. Fashion MNIST
 
    ```sh
    For Fashion MNIST dataset we have two folders, where one folder contains 
