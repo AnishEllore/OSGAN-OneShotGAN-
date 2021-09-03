@@ -1,5 +1,9 @@
 # One shot GAN (OSGAN)
-
+## Context
+This is the code for OSGAN paper(In preparation). OSGAN is an improved version of one shot federated learning.<br/>
+Below are some one shot federated learning papers for your reference
+1. [Fusion Learning: A One Shot Federated Learning](https://link.springer.com/chapter/10.1007/978-3-030-50420-5_31)
+2. [Hybrid Fusion Learning: A Hierarchical Learning Model for Distributed Systems](https://dl.acm.org/doi/10.1145/3410338.3412339)
 ## 🛠 Installation & Set Up
 
 1. Prerequisites
